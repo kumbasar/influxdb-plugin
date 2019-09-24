@@ -28,11 +28,14 @@ public class SonarQubePointGenerator extends AbstractPointGenerator {
     private static final String BUILD_DISPLAY_NAME = "display_name";
     private static final String SONARQUBE_LINES_OF_CODE = "lines_of_code";
     private static final String SONARQUBE_COMPLEXITY = "complexity";
+    private static final String SONARQUBE_BLOCKER_ISSUES = "blocker_issues";
     private static final String SONARQUBE_CRITICAL_ISSUES = "critical_issues";
     private static final String SONARQUBE_MAJOR_ISSUES = "major_issues";
     private static final String SONARQUBE_MINOR_ISSUES = "minor_issues";
     private static final String SONARQUBE_INFO_ISSUES = "info_issues";
-    private static final String SONARQUBE_BLOCKER_ISSUES = "blocker_issues";
+    private static final String SONARQUBE_LINE_COVERAGE = "line_coverage";
+    private static final String SONARQUBE_BRANCH_COVERAGE = "branch_coverage";
+    private static final String SONARQUBE_COVERAGE = "coverage";
 
     private static final String URL_PATTERN_IN_LOGS = ".*" + Pattern.quote("ANALYSIS SUCCESSFUL, you can browse ")
             + "(.*)";
@@ -183,14 +186,14 @@ public class SonarQubePointGenerator extends AbstractPointGenerator {
         return projectUrl.length > 1 ? projectUrl[projectUrl.length - 1] : "";
     }
 
-    private int getLinesOfCode(String url) throws IOException {
+    private double getMeasures(String metricName, String url) throws IOException {
         String output = getResult(url);
         JSONObject metricsObjects = JSONObject.fromObject(output);
-        int linesOfCodeCount = 0;
+        double linesOfCodeCount = 0;
         JSONArray array = metricsObjects.getJSONObject("component").getJSONArray("measures");
         for (int i = 0; i < array.size(); i++) {
             JSONObject metricsObject = array.getJSONObject(i);
-            if (metricsObject.get("metric").equals("ncloc")) {
+            if (metricsObject.get(metricName).equals("ncloc")) {
                 linesOfCodeCount = metricsObject.getInt("value");
             }
         }
