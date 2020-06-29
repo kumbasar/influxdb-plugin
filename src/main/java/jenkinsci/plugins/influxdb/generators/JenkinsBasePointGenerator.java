@@ -33,6 +33,7 @@ public class JenkinsBasePointGenerator extends AbstractPointGenerator {
     public static final String BUILD_IS_SUCCESSFUL = "build_successful";
 
     public static final String BUILD_AGENT_NAME = "build_agent_name";
+    public static final String BUILD_BRANCH_NAME = "build_branch_name";
 
     public static final String PROJECT_BUILD_HEALTH = "project_build_health";
     public static final String PROJECT_LAST_SUCCESSFUL = "last_successful_build";
@@ -93,7 +94,8 @@ public class JenkinsBasePointGenerator extends AbstractPointGenerator {
             .addField(BUILD_RESULT, result)
             .addField(BUILD_RESULT_ORDINAL, ordinal)
             .addField(BUILD_IS_SUCCESSFUL, ordinal < 2)
-            .addField(BUILD_AGENT_NAME, getBuildAgentName())
+            .addField(BUILD_AGENT_NAME, getBuildEnv("NODE_NAME"))
+            .addField(BUILD_BRANCH_NAME, getBuildEnv("BRANCH_NAME"))
             .addField(PROJECT_BUILD_HEALTH, build.getParent().getBuildHealth().getScore())
             .addField(PROJECT_LAST_SUCCESSFUL, getLastSuccessfulBuild())
             .addField(PROJECT_LAST_STABLE, getLastStableBuild())
@@ -118,8 +120,8 @@ public class JenkinsBasePointGenerator extends AbstractPointGenerator {
         return new Point[] {point.build()};
     }
 
-    private String getBuildAgentName() {
-        String s = env.get("NODE_NAME");
+    private String getBuildEnv(String buildEnv) {
+        String s = env.get(buildEnv);
         return s == null ? "" : s;
     }
 
